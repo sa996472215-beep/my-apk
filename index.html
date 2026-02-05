@@ -2,15 +2,19 @@
 <html lang="ar">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>تطبيق التذكير</title>
-
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>⏰ تطبيق التذكير</title>
+<meta name="theme-color" content="#667eea">
 <style>
 :root{
   --bg:linear-gradient(135deg,#667eea,#764ba2);
   --card:#ffffff;
   --text:#000;
   --accent:#4CAF50;
+  --danger:#f44336;
+  --warning:#ff9800;
+  --info:#2196F3;
+  --primary:#667eea;
 }
 .dark{
   --bg:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
@@ -20,34 +24,72 @@
 
 body{
   margin:0;
-  font-family:Arial;
+  font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   background:var(--bg);
   color:var(--text);
   direction:rtl;
   min-height:100vh;
+  padding:0;
+  box-sizing:border-box;
+  transition:background 0.3s ease;
 }
 
 .topbar{
   background:rgba(0,0,0,.25);
   color:white;
-  padding:12px;
+  padding:15px;
   text-align:center;
-  font-size:18px;
+  font-size:20px;
+  font-weight:600;
   position:sticky;
   top:0;
+  box-shadow:0 2px 10px rgba(0,0,0,.2);
+  z-index:100;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:15px;
 }
 
 .toggle{
-  position:absolute;
-  left:12px;
-  top:8px;
   background:#000;
   border:none;
-  width:36px;
-  height:36px;
+  width:38px;
+  height:38px;
   border-radius:50%;
   color:#fff;
   cursor:pointer;
+  transition:all 0.3s ease;
+  font-size:18px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.toggle:hover{
+  transform:rotate(180deg);
+  background:#333;
+}
+
+.tab-btn{
+  background:rgba(255,255,255,0.2);
+  border:none;
+  color:white;
+  padding:8px 15px;
+  border-radius:20px;
+  font-size:15px;
+  font-weight:600;
+  cursor:pointer;
+  transition:all 0.3s;
+}
+
+.tab-btn.active{
+  background:rgba(255,255,255,0.4);
+  transform:scale(1.05);
+}
+
+.tab-btn:hover:not(.active){
+  background:rgba(255,255,255,0.3);
 }
 
 .container{
@@ -57,24 +99,36 @@ body{
   padding:20px;
   border-radius:18px;
   box-shadow:0 10px 30px rgba(0,0,0,.4);
+  transition:all 0.3s ease;
 }
 
 .field{
-  margin-bottom:12px;
+  margin-bottom:15px;
 }
 
 .field label{
   display:block;
-  font-size:14px;
-  margin-bottom:4px;
+  font-size:15px;
+  margin-bottom:6px;
+  font-weight:600;
+  color:var(--text);
 }
 
 input,textarea,select,button{
   width:100%;
   margin:0;
-  padding:10px;
-  border-radius:10px;
+  padding:12px;
+  border-radius:12px;
   border:1px solid #ccc;
+  font-size:15px;
+  box-sizing:border-box;
+  font-family:inherit;
+}
+
+input:focus,textarea:focus,select:focus{
+  outline:none;
+  border-color:var(--accent);
+  box-shadow:0 0 0 3px rgba(76, 175, 80, 0.2);
 }
 
 button{
@@ -82,42 +136,306 @@ button{
   color:white;
   cursor:pointer;
   transition:.3s;
-  margin-top:8px;
+  margin-top:10px;
+  border:none;
+  font-weight:600;
+  font-size:16px;
+  padding:14px;
 }
-button:hover{transform:scale(1.03)}
+button:hover{transform:scale(1.03); box-shadow:0 4px 15px rgba(0,0,0,.2)}
 
-.record{background:#2196F3}
+.record{
+  background:var(--info);
+  margin-top:0;
+}
+
+.record:hover{
+  transform:scale(1.03);
+}
 
 .item{
   background:rgba(0,0,0,.05);
-  padding:12px;
+  padding:14px;
   border-radius:12px;
-  margin-top:10px;
+  margin-top:12px;
   display:flex;
-  align-items:center;
+  align-items:flex-start;
   justify-content:space-between;
+  transition:all 0.3s ease;
+  position:relative;
+}
+
+.item:hover{
+  transform:translateX(5px);
+  box-shadow:0 3px 12px rgba(0,0,0,.15);
 }
 
 .dark .item{background:rgba(255,255,255,.08)}
 
-.delete{
-  background:red;
-  border:none;
-  padding:6px;
-  color:white;
-  border-radius:8px;
-  margin-left:8px;
+.item.done{
+  opacity:0.6;
+  background:rgba(76, 175, 80, 0.1);
 }
 
-.circle{
-  width:50px;
-  height:50px;
-  border-radius:50%;
-  background:conic-gradient(#4CAF50 var(--p), #ddd 0);
+.delete{
+  background:var(--danger);
+  border:none;
+  padding:6px 10px;
+  color:white;
+  border-radius:8px;
+  cursor:pointer;
+  transition:all 0.2s;
+  font-size:16px;
+  min-width:36px;
+}
+
+.delete:hover{
+  background:#d32f2f;
+  transform:scale(1.1);
+}
+
+.time-display{
+  color:#666;
+  font-size:13px;
+  margin-top:4px;
+}
+
+.dark .time-display{
+  color:#aaa;
+}
+
+.alert{
+  padding:12px;
+  border-radius:10px;
+  margin:10px 0;
+  font-size:14px;
+  text-align:center;
+  font-weight:500;
+  animation:slideIn 0.3s ease;
+}
+
+@keyframes slideIn{
+  from{transform:translateY(-20px); opacity:0}
+  to{transform:translateY(0); opacity:1}
+}
+
+.alert-success{
+  background:rgba(76, 175, 80, 0.2);
+  color:#2e7d32;
+  border:1px solid #4CAF50;
+}
+
+.alert-warning{
+  background:rgba(255, 152, 0, 0.2);
+  color:#e65100;
+  border:1px solid #ff9800;
+}
+
+.alert-error{
+  background:rgba(244, 67, 54, 0.2);
+  color:#c62828;
+  border:1px solid #f44336;
+}
+
+.recording{
+  background:#f44336;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse{
+  0%{box-shadow:0 0 0 0 rgba(244, 67, 54, 0.4);}
+  70%{box-shadow:0 0 0 10px rgba(244, 67, 54, 0);}
+  100%{box-shadow:0 0 0 0 rgba(244, 67, 54, 0);}
+}
+
+.ringtones-grid{
+  display:grid;
+  grid-template-columns:repeat(2, 1fr);
+  gap:12px;
+  margin-top:10px;
+}
+
+.ringtone-item{
+  background:rgba(0,0,0,.05);
+  border-radius:12px;
+  padding:15px 10px;
+  text-align:center;
+  cursor:pointer;
+  transition:all 0.3s;
+  border:2px solid transparent;
   display:flex;
+  flex-direction:column;
   align-items:center;
-  justify-content:center;
-  font-size:11px;
+  min-height:100px;
+}
+
+.dark .ringtone-item{
+  background:rgba(255,255,255,.08);
+}
+
+.ringtone-item:hover{
+  transform:scale(1.03);
+  background:rgba(76,175,80,.1);
+}
+
+.ringtone-item.selected{
+  border-color:var(--accent);
+  background:rgba(76,175,80,.15);
+  transform:scale(1.05);
+  box-shadow:0 0 0 2px var(--accent);
+}
+
+.ringtone-item i{
+  font-size:28px;
+  margin-bottom:8px;
+}
+
+.ringtone-item span{
+  font-size:13px;
+  font-weight:600;
+  margin-top:5px;
+  display:block;
+  min-height:24px;
+}
+
+.preview-btn{
+  background:var(--info);
+  color:white;
+  border:none;
+  padding:4px 10px;
+  border-radius:20px;
+  font-size:14px;
+  margin-top:5px;
+  cursor:pointer;
+  transition:all 0.2s;
+}
+
+.preview-btn:hover{
+  transform:scale(1.1);
+  background:#1976d2;
+}
+
+.record-section{
+  background:rgba(33,150,243,0.1);
+  padding:15px;
+  border-radius:12px;
+  margin-top:15px;
+}
+
+.record-section h4{
+  margin:0 0 10px 0;
+  font-size:16px;
+  color:var(--info);
+  text-align:center;
+}
+
+.or-divider{
+  text-align:center;
+  margin:20px 0;
+  position:relative;
+}
+
+.or-divider::before{
+  content:'أو';
+  background:var(--card);
+  padding:0 15px;
+  position:relative;
+  z-index:1;
+  font-weight:700;
+  color:#666;
+  font-size:16px;
+}
+
+.or-divider::after{
+  content:'';
+  position:absolute;
+  top:50%;
+  left:0;
+  right:0;
+  height:1px;
+  background:#ddd;
+  z-index:0;
+}
+
+.stats{
+  display:flex;
+  justify-content:space-around;
+  margin:15px 0;
+  padding:12px;
+  background:rgba(0,0,0,.05);
+  border-radius:10px;
+  font-size:14px;
+  font-weight:600;
+}
+
+.dark .stats{
+  background:rgba(255,255,255,.08);
+}
+
+.empty-state{
+  text-align:center;
+  padding:40px 20px;
+  color:#999;
+}
+
+.empty-state i{
+  font-size:48px;
+  display:block;
+  margin-bottom:15px;
+}
+
+.empty-state p{
+  font-size:16px;
+  margin:0;
+}
+
+.page{
+  display:none;
+  animation:fadeIn 0.4s ease;
+}
+
+@keyframes fadeIn{
+  from{opacity:0; transform:translateY(10px)}
+  to{opacity:1; transform:translateY(0)}
+}
+
+.page.active{
+  display:block;
+}
+
+/* تحسينات للهاتف */
+@media (max-width:480px){
+  .container{
+    margin:10px;
+    padding:15px;
+  }
+  
+  .topbar{
+    padding:12px;
+    font-size:18px;
+  }
+  
+  button{
+    padding:12px;
+    font-size:15px;
+  }
+  
+  .ringtones-grid{
+    grid-template-columns:repeat(2, 1fr);
+  }
+  
+  .ringtone-item{
+    min-height:90px;
+    padding:12px 8px;
+  }
+  
+  .ringtone-item i{
+    font-size:24px;
+  }
+  
+  .ringtone-item span{
+    font-size:12px;
+  }
 }
 </style>
 </head>
@@ -125,199 +443,800 @@ button:hover{transform:scale(1.03)}
 <body>
 
 <div class="topbar">
-  ⏰ Reminder App
   <button class="toggle" id="modeBtn" onclick="toggleMode()">🌙</button>
+  <div>
+    <button class="tab-btn active" id="tabAdd" onclick="switchTab('add')">➕ إضافة</button>
+    <button class="tab-btn" id="tabList" onclick="switchTab('list')">📋 المواعيد</button>
+  </div>
+  <div style="width:38px;"></div>
 </div>
 
-<div class="container">
+<!-- صفحة الإضافة -->
+<div class="page active" id="pageAdd">
+  <div class="container">
+    <div id="messageContainer"></div>
 
-  <div class="field">
-    <label>📌 اسم الموعد</label>
-    <input id="title" placeholder="ادخل اسم الموعد">
+    <div class="field">
+      <label>📌 اسم الموعد</label>
+      <input id="title" placeholder="ادخل اسم الموعد" maxlength="100" autofocus>
+    </div>
+
+    <div class="field">
+      <label>📅 التاريخ</label>
+      <input type="date" id="date" min="">
+    </div>
+
+    <div class="field">
+      <label>⏰ الوقت</label>
+      <input type="time" id="time" min="">
+    </div>
+
+    <div class="field">
+      <label>🔁 التكرار</label>
+      <select id="repeat">
+        <option value="none">بدون تكرار</option>
+        <option value="daily">يومي</option>
+        <option value="weekly">أسبوعي</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label>🎵 اختر نغمة المنبه</label>
+      <div class="ringtones-grid" id="ringtonesGrid">
+        <!-- سيتم تحميل النغمات تلقائياً -->
+      </div>
+      
+      <div class="or-divider"></div>
+      
+      <button onclick="document.getElementById('sound').click()" style="background:#9c27b0;margin-top:0;">
+        📱 اختيار من ملفات جهازي
+      </button>
+      <input type="file" id="sound" accept="audio/*" style="display:none;" onchange="handleFileSelect(this)">
+    </div>
+
+    <div class="record-section">
+      <h4>🎙 أو سجل تذكيرك الصوتي</h4>
+      <button class="record" id="recordBtn" onclick="toggleRecord(this)">🎙 اضغط للتسجيل</button>
+    </div>
+
+    <div class="field">
+      <label>📝 الملاحظات</label>
+      <textarea id="note" placeholder="اكتب ملاحظاتك هنا (اختياري)" rows="3"></textarea>
+    </div>
+
+    <button class="main-btn" onclick="addReminder()">➕ إضافة الموعد</button>
   </div>
+</div>
 
-  <div class="field">
-    <label>📅 التاريخ</label>
-    <input type="date" id="date">
+<!-- صفحة المواعيد -->
+<div class="page" id="pageList">
+  <div class="container">
+    <div class="stats" id="stats">
+      <span>المواعيد: <strong id="totalReminders">0</strong></span>
+      <span>المكتملة: <strong id="completedReminders">0</strong></span>
+      <span>المتبقية: <strong id="pendingReminders">0</strong></span>
+    </div>
+
+    <div id="list"></div>
   </div>
-
-  <div class="field">
-    <label>⏰ الوقت</label>
-    <input type="time" id="time">
-  </div>
-
-  <div class="field">
-    <label>🔁 التكرار</label>
-    <select id="repeat">
-      <option value="none">بدون تكرار</option>
-      <option value="daily">يومي</option>
-      <option value="weekly">أسبوعي</option>
-    </select>
-  </div>
-
-  <div class="field">
-    <label>🎵 نغمة المنبه</label>
-    <input type="file" id="sound" accept="audio/*">
-  </div>
-
-  <button class="record" onclick="toggleRecord()">🎙 تسجيل صوت</button>
-
-  <div class="field">
-    <label>📝 الملاحظات</label>
-    <textarea id="note" placeholder="اكتب ملاحظاتك هنا"></textarea>
-  </div>
-
-  <button onclick="addReminder()">➕ إضافة الموعد</button>
-
-  <div id="list"></div>
 </div>
 
 <script>
+// ============================================
+// المتغيرات العامة
+// ============================================
 let reminders = JSON.parse(localStorage.getItem("reminders")) || [];
 let mode = localStorage.getItem("mode");
-const modeBtn=document.getElementById("modeBtn");
+let recorder, chunks = [], recordedAudio = null, recording = false;
+let selectedRingtone = null;
+let isTabActive = true;
+let isCheckingMissed = false;
+let previewAudio = null;
 
-if(mode==="dark"){document.body.classList.add("dark"); modeBtn.textContent="☀";}
+const modeBtn = document.getElementById("modeBtn");
+const title = document.getElementById("title");
+const dateInput = document.getElementById("date");
+const timeInput = document.getElementById("time");
+const noteInput = document.getElementById("note");
+const soundInput = document.getElementById("sound");
+const repeatSelect = document.getElementById("repeat");
+const recordBtn = document.getElementById("recordBtn");
+const messageContainer = document.getElementById("messageContainer");
+const ringtonesGrid = document.getElementById("ringtonesGrid");
+const list = document.getElementById("list");
 
-// طلب صلاحية الإشعارات
-if("Notification" in window && Notification.permission!=="granted"){
-  Notification.requestPermission();
+// ============================================
+// النغمات الافتراضية اللطيفة (بدون صراخ!)
+// ============================================
+const defaultRingtones = [
+  {
+    name: "جرس لطيف",
+    icon: "🔔",
+    url: "https://assets.mixkit.co/sfx/preview/mixkit-unlock-simple-notification-2442.mp3"
+  },
+  {
+    name: "تنبيه ناعم",
+    icon: "🎵",
+    url: "https://assets.mixkit.co/sfx/preview/mixkit-message-pop-alert-2331.mp3"
+  },
+  {
+    name: "نقرات هادئة",
+    icon: "💧",
+    url: "https://assets.mixkit.co/sfx/preview/mixkit-software-interface-click-2330.mp3"
+  },
+  {
+    name: "جرس باب",
+    icon: "🚪",
+    url: "https://assets.mixkit.co/sfx/preview/mixkit-doorbell-tone-2843.mp3"
+  },
+  {
+    name: "إشعاع هادئ",
+    icon: "✨",
+    url: "https://assets.mixkit.co/sfx/preview/mixkit-long-pop-notification-2332.mp3"
+  },
+  {
+    name: "نقرة خفيفة",
+    icon: "🔘",
+    url: "https://assets.mixkit.co/sfx/preview/mixkit-software-interface-start-2439.mp3"
+  }
+];
+
+// ============================================
+// تهيئة الوضع الليلي
+// ============================================
+if(mode === "dark"){
+  document.body.classList.add("dark");
+  modeBtn.textContent = "☀";
 }
 
-function toggleMode(){
+// ============================================
+// دالة تنسيق الوقت محليًا (إصلاح خطأ التوقيت)
+// ============================================
+function formatLocalDateTime(date) {
+  return new Date(date.getTime() - date.getTimezoneOffset() * 60000)
+    .toISOString()
+    .slice(0, 16);
+}
+
+// ============================================
+// دالة تحويل التاريخ إلى نص عربي
+// ============================================
+function formatDateArabic(date) {
+  const options = {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
+  };
+  return date.toLocaleDateString('ar-EG', options);
+}
+
+// ============================================
+// دالة إظهار رسالة
+// ============================================
+function showMessage(text, type = 'success') {
+  if (previewAudio) {
+    previewAudio.pause();
+    previewAudio = null;
+  }
+  
+  const alertClass = {
+    'success': 'alert-success',
+    'warning': 'alert-warning',
+    'error': 'alert-error'
+  };
+  
+  const messageDiv = document.createElement('div');
+  messageDiv.className = `alert ${alertClass[type]}`;
+  messageDiv.innerHTML = text;
+  
+  messageContainer.innerHTML = '';
+  messageContainer.appendChild(messageDiv);
+  
+  setTimeout(() => {
+    messageContainer.innerHTML = '';
+  }, 5000);
+}
+
+// ============================================
+// تبديل الوضع الليلي/النهاري
+// ============================================
+function toggleMode() {
   document.body.classList.toggle("dark");
-  let dark=document.body.classList.contains("dark");
-  modeBtn.textContent = dark ? "☀" : "🌙";
-  localStorage.setItem("mode", dark?"dark":"light");
+  const isDark = document.body.classList.contains("dark");
+  modeBtn.textContent = isDark ? "☀" : "🌙";
+  localStorage.setItem("mode", isDark ? "dark" : "light");
 }
 
-const title=document.getElementById("title");
-const dateInput=document.getElementById("date");
-const timeInput=document.getElementById("time");
-const noteInput=document.getElementById("note");
-const sound=document.getElementById("sound");
-const list=document.getElementById("list");
-const repeat=document.getElementById("repeat");
-
-let recorder,chunks=[],recordedAudio=null,recording=false;
-
-async function toggleRecord(){
-  if(!recording){
-    let stream = await navigator.mediaDevices.getUserMedia({audio:true});
-    recorder = new MediaRecorder(stream);
-    recorder.start();
-    chunks=[];
-    recorder.ondataavailable=e=>chunks.push(e.data);
-    recording=true;
-    event.target.innerText="⏹ إيقاف";
-  }else{
-    recorder.stop();
-    recorder.onstop=()=>{
-      let blob=new Blob(chunks,{type:"audio/webm"});
-      let reader=new FileReader();
-      reader.onload=()=>recordedAudio=reader.result;
-      reader.readAsDataURL(blob);
-    };
-    recording=false;
-    event.target.innerText="🎙 تسجيل صوت";
+// ============================================
+// تبديل الصفحات
+// ============================================
+function switchTab(tab) {
+  // إيقاف أي صوت معاينة نشط
+  if (previewAudio) {
+    previewAudio.pause();
+    previewAudio = null;
+  }
+  
+  // إخفاء جميع الصفحات
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  
+  // إظهار الصفحة المطلوبة
+  if (tab === 'add') {
+    document.getElementById('pageAdd').classList.add('active');
+    document.getElementById('tabAdd').classList.add('active');
+  } else {
+    document.getElementById('pageList').classList.add('active');
+    document.getElementById('tabList').classList.add('active');
+    show(); // تحديث قائمة المواعيد
   }
 }
 
-function addReminder(){
-  if(!title.value||!dateInput.value||!timeInput.value)
-    return alert("أدخل البيانات");
-
-  let fullTime = dateInput.value+"T"+timeInput.value;
-  let file = sound.files[0];
-  let reader = new FileReader();
-
-  reader.onload = () => {
-    let audioData = recordedAudio || reader.result;
-
-    reminders.push({
-      title:title.value,
-      time:fullTime,
-      note:noteInput.value,
-      sound:audioData,
-      repeat:repeat.value,
-      done:false
-    });
-
-    localStorage.setItem("reminders",JSON.stringify(reminders));
-    show();
-
-    // تشغيل الصوت فور الإضافة
-    if(audioData){ new Audio(audioData).play(); }
-
-    // إشعار فور الإضافة
-    if("Notification" in window && Notification.permission==="granted"){
-      new Notification("📌 تذكير جديد",{
-        body: title.value + " في " + timeInput.value,
-        icon: "https://cdn-icons-png.flaticon.com/512/2910/2910762.png"
-      });
+// ============================================
+// دالة قراءة ملف
+// ============================================
+function readFile(file) {
+  return new Promise((resolve, reject) => {
+    if (!file) {
+      resolve(null);
+      return;
     }
-
-    // مسح الحقول
-    title.value=dateInput.value=timeInput.value=noteInput.value="";
-    sound.value="";
-    recordedAudio=null;
-  };
-
-  if(file) reader.readAsDataURL(file);
-  else reader.onload();
-}
-
-function show(){
-  list.innerHTML="";
-  const now = new Date();
-
-  reminders.forEach((r,i)=>{
-    const target = new Date(r.time);
-    const total = target - now;
-    const p = Math.max(0,Math.min(100,(total/3600000)*100)); // نسبة تقريبية للساعة
-
-    // تحقق من الوقت لتشغيل الصوت والإشعار
-    if(!r.done && now >= target){
-      r.done = true;
-      if(r.sound) new Audio(r.sound).play();
-      if("Notification" in window && Notification.permission==="granted"){
-        new Notification("⏰ "+r.title,{
-          body:"موعدك الآن!",
-          icon:"https://cdn-icons-png.flaticon.com/512/2910/2910762.png"
-        });
-      }
-      // تكرار
-      if(r.repeat!=="none"){
-        let next = new Date(target);
-        if(r.repeat==="daily") next.setDate(next.getDate()+1);
-        if(r.repeat==="weekly") next.setDate(next.getDate()+7);
-        r.time = next.toISOString().slice(0,16);
-        r.done = false;
-      }
-      localStorage.setItem("reminders",JSON.stringify(reminders));
-    }
-
-    list.innerHTML+=`
-      <div class="item">
-        <div>
-          <b>📌 ${r.title}</b><br>
-          ⏰ ${target.toLocaleString("ar")}<br>
-          📝 ${r.note||""}
-        </div>
-        <div class="circle" style="--p:${p}%">${Math.floor(p)}%</div>
-        <button class="delete" onclick="del(${i})">حذف</button>
-      </div>`;
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
   });
 }
 
-function del(i){
-  reminders.splice(i,1);
-  localStorage.setItem("reminders",JSON.stringify(reminders));
+// ============================================
+// معالجة اختيار ملف من الجهاز
+// ============================================
+function handleFileSelect(input) {
+  if (input.files && input.files[0]) {
+    const file = input.files[0];
+    if (file.size > 5 * 1024 * 1024) { // 5MB
+      showMessage("⚠️ حجم الملف كبير جدًا (الحد الأقصى 5MB)", 'error');
+      input.value = '';
+      return;
+    }
+    
+    readFile(file).then(data => {
+      selectedRingtone = data;
+      // إزالة تحديد النغمات الافتراضية
+      document.querySelectorAll('.ringtone-item').forEach(item => {
+        item.classList.remove('selected');
+      });
+      showMessage(`✓ تم اختيار الملف: ${file.name.substring(0, 20)}${file.name.length > 20 ? '...' : ''}`, 'success');
+    }).catch(e => {
+      console.error("خطأ في قراءة الملف:", e);
+      showMessage("⚠️ خطأ في قراءة ملف الصوت", 'error');
+    });
+  }
+}
+
+// ============================================
+// تشغيل معاينة النغمة (مع إيقاف المعاينات السابقة)
+// ============================================
+function playPreview(url, element) {
+  // إيقاف أي معاينة سابقة
+  if (previewAudio) {
+    previewAudio.pause();
+    previewAudio = null;
+  }
+  
+  try {
+    previewAudio = new Audio(url);
+    previewAudio.volume = 0.7;
+    previewAudio.play();
+    
+    // إضافة تأثير بصري أثناء التشغيل
+    const btn = element.querySelector('.preview-btn');
+    const originalText = btn.innerHTML;
+    btn.innerHTML = '⏸️';
+    
+    previewAudio.onended = () => {
+      btn.innerHTML = originalText;
+      previewAudio = null;
+    };
+    
+    previewAudio.onerror = () => {
+      btn.innerHTML = originalText;
+      previewAudio = null;
+      console.error("فشل تشغيل النغمة:", url);
+    };
+  } catch (e) {
+    console.error("خطأ في تشغيل المعاينة:", e);
+    showMessage("❌ فشل تشغيل النغمة", 'error');
+  }
+}
+
+// ============================================
+// اختيار نغمة من النغمات الافتراضية
+// ============================================
+function selectRingtone(element, url) {
+  // إيقاف أي معاينة نشطة
+  if (previewAudio) {
+    previewAudio.pause();
+    previewAudio = null;
+  }
+  
+  // إزالة التحديد من جميع العناصر
+  document.querySelectorAll('.ringtone-item').forEach(item => {
+    item.classList.remove('selected');
+  });
+  
+  // تحديد العنصر المختار
+  element.classList.add('selected');
+  selectedRingtone = url;
+  
+  showMessage("✓ تم اختيار النغمة: " + element.querySelector('span').textContent, 'success');
+}
+
+// ============================================
+// تحميل النغمات الافتراضية اللطيفة
+// ============================================
+function loadDefaultRingtones() {
+  ringtonesGrid.innerHTML = '';
+  
+  defaultRingtones.forEach((ringtone, index) => {
+    const item = document.createElement('div');
+    item.className = 'ringtone-item';
+    item.innerHTML = `
+      <i>${ringtone.icon}</i>
+      <span>${ringtone.name}</span>
+      <button class="preview-btn">▶️ استماع</button>
+    `;
+    
+    // حدث الاستماع
+    item.querySelector('.preview-btn').addEventListener('click', (e) => {
+      e.stopPropagation();
+      playPreview(ringtone.url, item);
+    });
+    
+    // حدث الاختيار
+    item.addEventListener('click', () => selectRingtone(item, ringtone.url));
+    
+    ringtonesGrid.appendChild(item);
+  });
+}
+
+// ============================================
+// تبديل التسجيل الصوتي
+// ============================================
+async function toggleRecord(btn) {
+  try {
+    if (!navigator.mediaDevices || !window.MediaRecorder) {
+      showMessage("متصفحك لا يدعم تسجيل الصوت", 'error');
+      return;
+    }
+
+    if (!recording) {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      recorder = new MediaRecorder(stream);
+      recorder.start();
+      chunks = [];
+      recorder.ondataavailable = e => chunks.push(e.data);
+      recording = true;
+      btn.innerText = "⏹ إيقاف التسجيل";
+      btn.classList.add('recording');
+      showMessage("🎤 يتم التسجيل... تحدث بوضوح", 'success');
+    } else {
+      recorder.stop();
+      recorder.onstop = async () => {
+        const blob = new Blob(chunks, { type: "audio/webm" });
+        recorder.stream.getTracks().forEach(track => track.stop());
+        const reader = new FileReader();
+        reader.onload = () => {
+          recordedAudio = reader.result;
+          selectedRingtone = null; // مسح النغمة المختارة
+          // إزالة تحديد النغمات الافتراضية
+          document.querySelectorAll('.ringtone-item').forEach(item => {
+            item.classList.remove('selected');
+          });
+          showMessage("✓ تم حفظ التسجيل بنجاح", 'success');
+        };
+        reader.readAsDataURL(blob);
+      };
+      recording = false;
+      btn.innerText = "🎙 اضغط للتسجيل";
+      btn.classList.remove('recording');
+    }
+  } catch (err) {
+    console.error("خطأ في التسجيل:", err);
+    showMessage("❌ خطأ في التسجيل: " + (err.name || "غير معروف"), 'error');
+    recording = false;
+    recordBtn.innerText = "🎙 اضغط للتسجيل";
+    recordBtn.classList.remove('recording');
+    if (recorder && recorder.stream) {
+      recorder.stream.getTracks().forEach(track => track.stop());
+    }
+  }
+}
+
+// ============================================
+// إضافة تذكير جديد
+// ============================================
+async function addReminder() {
+  if (!title.value.trim()) {
+    showMessage("⚠️ يرجى إدخال اسم الموعد", 'error');
+    title.focus();
+    return;
+  }
+
+  if (!dateInput.value) {
+    showMessage("⚠️ يرجى اختيار التاريخ", 'error');
+    dateInput.focus();
+    return;
+  }
+
+  if (!timeInput.value) {
+    showMessage("⚠️ يرجى اختيار الوقت", 'error');
+    timeInput.focus();
+    return;
+  }
+
+  const now = new Date();
+  const selectedDateTime = new Date(dateInput.value + "T" + timeInput.value);
+  
+  if (selectedDateTime <= now) {
+    showMessage("⚠️ الوقت يجب أن يكون في المستقبل!", 'error');
+    return;
+  }
+
+  // تحديد النغمة المستخدمة
+  let audioData = null;
+  
+  if (recordedAudio) {
+    audioData = recordedAudio;
+  } else if (selectedRingtone) {
+    audioData = selectedRingtone;
+  }
+
+  reminders.push({
+    title: title.value.trim(),
+    time: dateInput.value + "T" + timeInput.value,
+    note: noteInput.value.trim(),
+    sound: audioData,
+    repeat: repeatSelect.value,
+    done: false,
+    id: Date.now()
+  });
+
+  try {
+    localStorage.setItem("reminders", JSON.stringify(reminders));
+    showMessage("✓ تم إضافة الموعد بنجاح!", 'success');
+  } catch (e) {
+    console.error("خطأ في الحفظ:", e);
+    showMessage("❌ خطأ في الحفظ. قد تكون الذاكرة ممتلئة.", 'error');
+    return;
+  }
+
+  // تشغيل صوت الاختبار
+  if (audioData) {
+    try {
+      const audio = new Audio(audioData);
+      audio.volume = 0.5;
+      audio.play().catch(e => console.log("لا يمكن التشغيل الآن"));
+    } catch (e) {
+      console.error("خطأ في تشغيل الصوت:", e);
+    }
+  }
+
+  // إرسال إشعار
+  if ("Notification" in window && Notification.permission === "granted") {
+    try {
+      new Notification("📌 تذكير جديد", {
+        body: `${title.value} في ${timeInput.value}`,
+        icon: "https://cdn-icons-png.flaticon.com/512/2910/2910762.png"
+      });
+    } catch (e) {
+      console.error("خطأ في الإشعار:", e);
+    }
+  }
+
+  // إعادة تعيين الحقول
+  title.value = "";
+  noteInput.value = "";
+  soundInput.value = "";
+  recordedAudio = null;
+  selectedRingtone = null;
+  recordBtn.innerText = "🎙 اضغط للتسجيل";
+  recordBtn.classList.remove('recording');
+  
+  // إزالة تحديد النغمات
+  document.querySelectorAll('.ringtone-item').forEach(item => {
+    item.classList.remove('selected');
+  });
+  
+  // إيقاف التسجيل إذا كان نشطًا
+  if (recording) {
+    recorder.stop();
+    recording = false;
+  }
+
+  // تحديث الوقت الحالي
+  const nowDate = new Date();
+  const year = nowDate.getFullYear();
+  const month = String(nowDate.getMonth() + 1).padStart(2, '0');
+  const day = String(nowDate.getDate()).padStart(2, '0');
+  const hours = String(nowDate.getHours()).padStart(2, '0');
+  const minutes = String(Math.min(59, nowDate.getMinutes() + 2)).padStart(2, '0'); // +2 دقائق
+  
+  dateInput.value = `${year}-${month}-${day}`;
+  timeInput.value = `${hours}:${minutes}`;
+}
+
+// ============================================
+// عرض المواعيد
+// ============================================
+function show() {
+  const now = new Date();
+  let total = 0, completed = 0, pending = 0;
+  let html = '';
+
+  // تحديث الوقت الحالي للحد الأدنى
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const day = String(now.getDate()).padStart(2, '0');
+  dateInput.min = `${year}-${month}-${day}`;
+  
+  if (!dateInput.value || dateInput.value < `${year}-${month}-${day}`) {
+    dateInput.value = `${year}-${month}-${day}`;
+  }
+
+  reminders.sort((a, b) => new Date(a.time) - new Date(b.time));
+
+  reminders.forEach((r, i) => {
+    total++;
+    const target = new Date(r.time);
+    const isDone = r.done || now > target;
+    
+    if (isDone) completed++;
+    else pending++;
+
+    // تشغيل المنبه عند الوصول للوقت (فقط إذا التبويب نشط)
+    if (isTabActive && !r.done && now >= target) {
+      r.done = true;
+      
+      if (r.sound) {
+        try {
+          const audio = new Audio(r.sound);
+          audio.volume = 0.8;
+          audio.play().catch(e => console.log("لا يمكن التشغيل"));
+        } catch (e) {
+          console.error("خطأ في تشغيل صوت المنبه:", e);
+        }
+      }
+
+      if ("Notification" in window && Notification.permission === "granted") {
+        try {
+          new Notification("⏰ " + r.title, {
+            body: "موعدك الآن! " + (r.note ? "\n" + r.note : ""),
+            icon: "https://cdn-icons-png.flaticon.com/512/2910/2910762.png"
+          });
+        } catch (e) {
+          console.error("خطأ في إرسال الإشعار:", e);
+        }
+      }
+
+      if (r.repeat !== "none") {
+        const next = new Date(target);
+        if (r.repeat === "daily") next.setDate(next.getDate() + 1);
+        if (r.repeat === "weekly") next.setDate(next.getDate() + 7);
+        r.time = formatLocalDateTime(next);
+        r.done = false;
+      }
+      
+      try {
+        localStorage.setItem("reminders", JSON.stringify(reminders));
+      } catch (e) {
+        console.error("خطأ في الحفظ:", e);
+      }
+    }
+
+    html += `
+      <div class="item ${r.done ? 'done' : ''}">
+        <div style="flex:1; min-width:0;">
+          <b>📌 ${r.title}</b><br>
+          <span class="time-display">⏰ ${formatDateArabic(target)}</span><br>
+          ${r.note ? `<span style="color:#666; font-size:13px;">📝 ${r.note}</span>` : ''}
+          ${r.repeat !== 'none' ? `<br><span style="color:#2196F3; font-size:12px;">🔁 ${r.repeat === 'daily' ? 'يومي' : 'أسبوعي'}</span>` : ''}
+          ${r.sound ? `<br><span style="color:#4CAF50; font-size:12px;">🎵 نغمة مخصصة</span>` : ''}
+        </div>
+        <button class="delete" onclick="del(${i})">🗑️</button>
+      </div>`;
+  });
+
+  if (html === '') {
+    list.innerHTML = `
+      <div class="empty-state">
+        <i>📭</i>
+        <p>لا توجد مواعيد حتى الآن</p>
+        <button class="main-btn" onclick="switchTab('add')" style="background:var(--accent);color:white;border:none;padding:10px 20px;border-radius:10px;margin-top:15px;">
+          ➕ أضف موعدك الأول
+        </button>
+      </div>`;
+  } else {
+    list.innerHTML = html;
+  }
+  
+  document.getElementById('totalReminders').textContent = total;
+  document.getElementById('completedReminders').textContent = completed;
+  document.getElementById('pendingReminders').textContent = pending;
+}
+
+// ============================================
+// حذف تذكير
+// ============================================
+function del(i) {
+  if (confirm("هل أنت متأكد من حذف هذا الموعد؟")) {
+    reminders.splice(i, 1);
+    try {
+      localStorage.setItem("reminders", JSON.stringify(reminders));
+      showMessage("✓ تم حذف الموعد", 'success');
+      if (document.getElementById('pageList').classList.contains('active')) {
+        show();
+      }
+    } catch (e) {
+      console.error("خطأ في الحذف:", e);
+      showMessage("❌ خطأ في الحذف", 'error');
+    }
+  }
+}
+
+// ============================================
+// التحقق من المواعيد المفقودة عند فتح التطبيق
+// ============================================
+function checkMissedReminders() {
+  if (isCheckingMissed) return;
+  isCheckingMissed = true;
+  
+  const now = new Date();
+  const lastCheck = localStorage.getItem("lastCheckTime");
+  let missedCount = 0;
+  
+  if (lastCheck) {
+    const lastCheckTime = new Date(lastCheck);
+    
+    reminders.forEach(r => {
+      if (!r.done) {
+        const target = new Date(r.time);
+        if (target > lastCheckTime && target <= now) {
+          missedCount++;
+          
+          // تشغيل المنبه فورًا
+          if (r.sound) {
+            try {
+              const audio = new Audio(r.sound);
+              audio.volume = 0.8;
+              audio.play().catch(e => console.log("لا يمكن التشغيل"));
+            } catch (e) {
+              console.error("خطأ في تشغيل الصوت:", e);
+            }
+          }
+          
+          // إرسال إشعار
+          if ("Notification" in window && Notification.permission === "granted") {
+            try {
+              new Notification("⏰ فاتك موعد!", {
+                body: `فاتك موعد: ${r.title}\nكان مقررًا في: ${formatDateArabic(new Date(r.time))}`,
+                icon: "https://cdn-icons-png.flaticon.com/512/2910/2910762.png"
+              });
+            } catch (e) {
+              console.error("خطأ في الإشعار:", e);
+            }
+          }
+          
+          // معالجة التكرار
+          if (r.repeat !== "none") {
+            const next = new Date(target);
+            if (r.repeat === "daily") next.setDate(next.getDate() + 1);
+            if (r.repeat === "weekly") next.setDate(next.getDate() + 7);
+            r.time = formatLocalDateTime(next);
+          } else {
+            r.done = true;
+          }
+        }
+      }
+    });
+    
+    if (missedCount > 0) {
+      localStorage.setItem("reminders", JSON.stringify(reminders));
+      setTimeout(() => {
+        alert(`⚠️ فاتك ${missedCount} موعد${missedCount > 1 ? 'ات' : ''} أثناء إغلاق التطبيق.\nتم تحديث المواعيد المتكررة تلقائيًا.`);
+      }, 300);
+    }
+  }
+  
+  // حفظ وقت الفحص الحالي
+  localStorage.setItem("lastCheckTime", now.toISOString());
+  isCheckingMissed = false;
   show();
 }
 
-setInterval(show,1000);
-show();
+// ============================================
+// كشف تغيير حالة التبويب
+// ============================================
+document.addEventListener('visibilitychange', () => {
+  isTabActive = !document.hidden;
+  
+  if (isTabActive && !isCheckingMissed) {
+    setTimeout(checkMissedReminders, 500);
+  }
+});
+
+// ============================================
+// دالة طلب صلاحية الإشعارات
+// ============================================
+async function requestNotificationPermission() {
+  if ("Notification" in window) {
+    try {
+      if (Notification.permission !== "granted" && Notification.permission !== "denied") {
+        await Notification.requestPermission();
+      }
+    } catch (e) {
+      console.error("خطأ في طلب صلاحية الإشعارات:", e);
+    }
+  }
+}
+
+// ============================================
+// التهيئة الأولية
+// ============================================
+function init() {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const day = String(now.getDate()).padStart(2, '0');
+  const hours = String(now.getHours()).padStart(2, '0');
+  const minutes = String(Math.min(59, now.getMinutes() + 2)).padStart(2, '0');
+  
+  dateInput.value = `${year}-${month}-${day}`;
+  timeInput.value = `${hours}:${minutes}`;
+  dateInput.min = `${year}-${month}-${day}`;
+  
+  // تحميل النغمات الافتراضية اللطيفة
+  loadDefaultRingtones();
+  
+  // طلب صلاحية الإشعارات
+  requestNotificationPermission();
+  
+  // تسجيل وقت الفحص الأول
+  if (!localStorage.getItem("lastCheckTime")) {
+    localStorage.setItem("lastCheckTime", now.toISOString());
+  }
+  
+  // التحقق من المواعيد المفقودة عند الفتح الأول
+  setTimeout(checkMissedReminders, 1000);
+  
+  // تحديث دوري (كل ثانية)
+  setInterval(() => {
+    if (isTabActive) {
+      show();
+      localStorage.setItem("lastCheckTime", new Date().toISOString());
+    }
+  }, 1000);
+  
+  show();
+}
+
+// ============================================
+// منع إغلاق الصفحة أثناء التسجيل
+// ============================================
+window.addEventListener('beforeunload', (e) => {
+  if (recording) {
+    e.preventDefault();
+    e.returnValue = '';
+  }
+});
+
+// ============================================
+// بدء التطبيق
+// ============================================
+window.addEventListener('DOMContentLoaded', init);
 </script>
 
 </body>
